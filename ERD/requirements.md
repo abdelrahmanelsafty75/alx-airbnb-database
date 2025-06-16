@@ -1,0 +1,58 @@
+# ER Diagram for PropertyRental Database
+
+## Entities and Attributes
+- **User**:
+  - user_id: UUID, Primary Key
+  - first_name: VARCHAR, NOT NULL
+  - last_name: VARCHAR, NOT NULL
+  - email: VARCHAR, UNIQUE, NOT NULL
+  - password_hash: VARCHAR, NOT NULL
+  - phone_number: VARCHAR, NULL
+  - role: ENUM (guest, host, admin), NOT NULL
+  - created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- **Property**:
+  - property_id: UUID, Primary Key
+  - host_id: UUID, Foreign Key (User.user_id)
+  - name: VARCHAR, NOT NULL
+  - description: TEXT, NOT NULL
+  - location: VARCHAR, NOT NULL
+  - pricepernight: DECIMAL, NOT NULL
+  - created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+  - updated_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- **Booking**:
+  - booking_id: UUID, Primary Key
+  - property_id: UUID, Foreign Key (Property.property_id)
+  - user_id: UUID, Foreign Key (User.user_id)
+  - start_date: DATE, NOT NULL
+  - end_date: DATE, NOT NULL
+  - total_price: DECIMAL, NOT NULL
+  - status: ENUM (pending, confirmed, canceled), NOT NULL
+  - created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- **Payment**:
+  - payment_id: UUID, Primary Key
+  - booking_id: UUID, Foreign Key (Booking.booking_id)
+  - amount: DECIMAL, NOT NULL
+  - payment_date: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+  - payment_method: ENUM (credit_card, paypal, stripe), NOT NULL
+- **Review**:
+  - review_id: UUID, Primary Key
+  - property_id: UUID, Foreign Key (Property.property_id)
+  - user_id: UUID, Foreign Key (User.user_id)
+  - rating: INTEGER, CHECK (1-5), NOT NULL
+  - comment: TEXT, NOT NULL
+  - created_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+- **Message**:
+  - message_id: UUID, Primary Key
+  - sender_id: UUID, Foreign Key (User.user_id)
+  - recipient_id: UUID, Foreign Key (User.user_id)
+  - message_body: TEXT, NOT NULL
+  - sent_at: TIMESTAMP, DEFAULT CURRENT_TIMESTAMP
+
+## Relationships
+- **User-Property**: One-to-Many (One user (host) can own multiple properties; a property has one host).
+- **User-Booking**: One-to-Many (One user (guest) can make multiple bookings; a booking is made by one user).
+- **Property-Booking**: One-to-Many (One property can have multiple bookings; a booking is for one property).
+- **Booking-Payment**: One-to-One (One booking can have one payment; a payment is linked to one booking).
+- **Property-Review**: One-to-Many (One property can have multiple reviews; a review is for one property).
+- **User-Review**: One-to-Many (One user can write multiple reviews; a review is written by one user).
+- **User-Message**: Many-to-Many (A user can send and receive multiple messages; a message has one sender and one recipient).
